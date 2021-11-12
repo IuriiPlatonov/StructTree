@@ -111,22 +111,16 @@ public class StructTreeServiceImpl implements StructTreeService
         QueryResponse response = solr.query(query);
         SolrDocumentList docs = response.getResults();
 
-        docs.sort((o1, o2) -> ((String) o1.getFieldValue("catDccrdkndstIdPath"))
-            .compareTo((String) o2.getFieldValue("catDccrdkndstIdPath")));
-
         List<DocCardKindStructureBean> docCardKindStructList = new ArrayList<>();
 
         for (SolrDocument doc : docs)
         {
             search(docCardKindStructList,
-                (String) doc.getFieldValue(Constant.catDccrdkndstId),
-                solr);
+                (String) doc.getFieldValue(Constant.catDccrdkndstId), solr);
         }
 
         docCardKindStructList.sort((o1, o2) -> o1.getCatDccrdkndstIdPath()
             .compareTo(o2.getCatDccrdkndstIdPath()));
-
-        // System.out.println(Arrays.toString(docCardKindStructList.toArray()));
 
         Iterator<DocCardKindStructureBean> iterator = docCardKindStructList
             .iterator();
@@ -142,38 +136,28 @@ public class StructTreeServiceImpl implements StructTreeService
     private void search(List<DocCardKindStructureBean> list, String parent,
         HttpSolrClient solr)
     {
+
         SolrQuery query = new SolrQuery();
-        query.setQuery("catDccrdkndstIdPath:*" + parent + "*");
+        query.setQuery("catDccrdkndstIdPath:" + parent + "~");
+
+        query.setRows(Integer.MAX_VALUE);
         query.addField(Constant.catDccrdkndstId);
         query.addField(Constant.catDccrdkndstIdPath);
         query.addField(Constant.catName);
         query.addField(Constant.catParentId);
+
         QueryResponse response = solr.query(query);
         SolrDocumentList docs = response.getResults();
+
         for (SolrDocument doc : docs)
         {
             list.add(DocCardKindStructureBean.builder()
                 .id((String) doc.getFieldValue(Constant.catDccrdkndstId))
-                .parentId(parent.equals(
-                    (String) doc.getFieldValue(Constant.catDccrdkndstId)) ? null
-                        : (String) doc.getFieldValue(Constant.catParentId))
+                .parentId((String) doc.getFieldValue(Constant.catParentId))
                 .name((String) doc.getFieldValue(Constant.catName))
                 .catDccrdkndstIdPath(
                     (String) doc.getFieldValue(Constant.catDccrdkndstIdPath))
                 .build());
-
-            /* Пытался осознать, где ошибка =) */
-            System.out
-                .println("id: " + doc.getFieldValue(Constant.catDccrdkndstId));
-            System.out.println("Условие: " + (parent.equals(
-                (String) doc.getFieldValue(Constant.catDccrdkndstId)) ? null
-                    : (String) doc.getFieldValue(Constant.catParentId)));
-            System.out.println(
-                "parent from doc: " + doc.getFieldValue(Constant.catParentId));
-            System.out.println("parent from method: " + parent);
-            System.out.println(
-                "path: " + doc.getFieldValue(Constant.catDccrdkndstIdPath));
-            System.out.println();
         }
     }
 
