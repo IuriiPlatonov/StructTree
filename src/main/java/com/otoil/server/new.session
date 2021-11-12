@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<SessionConfig>
+	<properties>
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+		<property name="connectionString" value="jdbc:oracle:thin:@10.100.22.9:1521:HPDOILDV"/>
+		<property name="user" value="ADMIN"/>
+		<property name="password" value="admin"/>
+	</properties>
+
+	<mapping id="StructTree.TreeDocCard">
+		<class name="com.otoil.server.entities.treedoccard.TreeDocCard"/>
+		<entity name="com/otoil/server/entities/treedoccard/TreeDocCard.entity"/>
+		<view name="com/otoil/server/entities/treedoccard/DocCard.view"/>
+	</mapping>
+
+</SessionConfig>
